@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProductManagement.Dtos;
 using ProductManagement.Models;
 using ProductManagement.Repositories.Interface;

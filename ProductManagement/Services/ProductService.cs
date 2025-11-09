@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManagement.Dtos;
 using ProductManagement.Models;
-using ProductManagement.Repositories;
 using ProductManagement.Repositories.Interface;
 using ProductManagement.Services.Interface;
 

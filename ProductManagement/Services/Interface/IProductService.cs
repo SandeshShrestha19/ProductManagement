@@ -1,5 +1,4 @@
 ﻿using ProductManagement.Dtos;
-using ProductManagement.Models;
 
 namespace ProductManagement.Services.Interface
 {
