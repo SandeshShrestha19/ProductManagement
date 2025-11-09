@@ -8,7 +8,6 @@ namespace ProductManagement.Extensions
         public static IServiceCollection AddDatabaseDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")));
-
             return services;
         }
     }
