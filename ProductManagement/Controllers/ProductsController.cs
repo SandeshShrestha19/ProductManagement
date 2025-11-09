@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Dtos;
-using ProductManagement.Repositories;
+
 using ProductManagement.Repositories.Interface;
 using ProductManagement.Services.Interface;
 

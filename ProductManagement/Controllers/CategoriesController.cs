@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using ProductManagement.Dtos;
 using ProductManagement.Repositories.Interface;
-using ProductManagement.Services;
 using ProductManagement.Services.Interface;
 
 namespace ProductManagement.Controllers
