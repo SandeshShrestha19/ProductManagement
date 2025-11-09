@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Data;
-using ProductManagement.Dtos;
 using ProductManagement.Models;
 using ProductManagement.Repositories.Interface;
 

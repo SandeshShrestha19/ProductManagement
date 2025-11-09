@@ -1,4 +1,4 @@
-﻿using ProductManagement.Dtos;
+﻿
 using ProductManagement.Models;
 
 namespace ProductManagement.Repositories.Interface

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Data;
-using ProductManagement.Dtos;
 using ProductManagement.Models;
 using ProductManagement.Repositories.Interface;
 
