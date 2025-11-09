@@ -5,10 +5,9 @@ namespace ProductManagement.Repositories.Interface
 {
     public interface IProductRepository
     {
-        Task<List<Product>> GetAllProductsAsync();
-        Task<Product> FindByIdAsync(int id);
-        Task CreateAsync(ProductDto productDto);
-        Task UpdateAsync(ProductDto productDto);
-        Task DeleteAsync(int id);
+        IQueryable<Product> GetQueryable();
+        Task<Product> CreateAsync(Product product);
+        Task<Product> UpdateAsync(Product product);
+        Task DeleteAsync(Product product);
     }
 }

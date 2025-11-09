@@ -5,13 +5,9 @@ namespace ProductManagement.Repositories.Interface
 {
     public interface ICategoryRepository
     {
-        Task<List<Category>> GetAllCategoryAsync();
-        Task CreateCategoryAsync(CategoryDto categoryDto);
-
-        Task<Category> FindByIdAsync(int id);
-
-        Task UpdateCategoryAsync(CategoryDto categoryDto);
-        Task DeleteCategoryAsync(int id);
-
+        IQueryable<Category> GetQueryable();
+        Task<Category> AddAsync(Category category);
+        Task<Category> UpdateAsync(Category category);
+        Task DeleteAsync(Category category);
     }
 }

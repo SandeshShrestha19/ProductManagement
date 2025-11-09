@@ -5,10 +5,8 @@ namespace ProductManagement.Services.Interface
 {
     public interface IProductService
     {
-        Task<List<Product>> GetAllProductsAsync();
-        Task<Product> FindByIdAsync(int id);
-        Task CreateAsync(ProductDto productDto);
-        Task DeleteAsync(int id);
-        Task UpdateAsync(ProductDto productDto);
+        Task CreateProductAsync(ProductDto productCreateDto);
+        Task DeleteProductAsync(int id);
+        Task UpdateProductAsync(int id, ProductDto productUpdateDto);
     }
 }

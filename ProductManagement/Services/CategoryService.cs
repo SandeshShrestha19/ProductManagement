@@ -1,4 +1,6 @@
-﻿using ProductManagement.Dtos;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using ProductManagement.Dtos;
 using ProductManagement.Models;
 using ProductManagement.Repositories.Interface;
 using ProductManagement.Services.Interface;
@@ -13,26 +15,55 @@ namespace ProductManagement.Services
         {
             _categoryRepository = categoryRepository;
         }
-
-        public async Task<List<Category>> GetAllCategoryAsync()
-        {
-            return await _categoryRepository.GetAllCategoryAsync();
-        }
-        public async Task<Category> FindByIdAsync(int id)
-        {
-            return await _categoryRepository.FindByIdAsync(id);
-        }
         public async Task CreateCategoryAsync(CategoryDto categoryDto)
         {
-            await _categoryRepository.CreateCategoryAsync(categoryDto);
+            try
+            {
+                var category = new Category
+                {
+                    Name = categoryDto.Name,
+                    Description = categoryDto.Description
+                };
+                await _categoryRepository.AddAsync(category);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
-        public async Task UpdateCategoryAsync(CategoryDto categoryDto)
+        public async Task UpdateCategoryAsync(int id, CategoryDto categoryDto)
         {
-            await _categoryRepository.UpdateCategoryAsync(categoryDto);
+            try
+            {
+                var category = await _categoryRepository.GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+                if (category is null)
+                {
+                    throw new Exception("Category not found!");
+                }
+                await _categoryRepository.UpdateAsync(category);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
         public async Task DeleteCategoryAsync(int id)
         {
-            await _categoryRepository.DeleteCategoryAsync(id);
+            try
+            {
+                var category = await _categoryRepository.GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+                if (category is null)
+                {
+                    throw new Exception("Category not found!");
+                }
+                await _categoryRepository.DeleteAsync(category);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

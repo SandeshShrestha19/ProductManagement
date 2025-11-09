@@ -15,55 +15,28 @@ namespace ProductManagement.Repositories
             _context = context;
         }
 
-        public async Task<List<Product>> GetAllProductsAsync()
+        public IQueryable<Product> GetQueryable()
         {
-            return await _context.Products.Include(p => p.Category).ToListAsync();
-        }
-        public async Task<Product?> FindByIdAsync( int id)
-        {
-            return await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            return _context.Set<Product>().AsQueryable();
         }
 
-        public async Task CreateAsync(ProductDto productDto)
+        public async Task<Product> CreateAsync(Product product)
         {
-            var product = new Product
-            {
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Description = productDto.Description,
-                CategoryId = productDto.CategoryId
-            };
-            _context.Products.Add(product);
+            await _context.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
+
+        public async Task DeleteAsync(Product product)
+        {
+            _context.Remove(product);
             await _context.SaveChangesAsync();
         }
-
-        public async Task DeleteAsync(int id)
+        public async Task<Product> UpdateAsync(Product product)
         {
-            var product = await _context.Products.FindAsync(id);
-            if(product == null)
-            {
-                throw new Exception("Product not found!");
-            }
-            _context.Products.Remove(product);
+            _context.Update(product);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(ProductDto productDto)
-        {
-            var product = await _context.Products.FindAsync(productDto.Id);
-            if (product == null)
-            {
-                throw new Exception("Product not found!");
-            }
-
-            product.Name = productDto.Name;
-            product.Price = productDto.Price;
-            product.Description = productDto.Description;
-            product.CategoryId = productDto.CategoryId;
-
-            await _context.SaveChangesAsync();
+            return product;
         }
 
     }

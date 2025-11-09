@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using ProductManagement.Dtos;
+using ProductManagement.Repositories.Interface;
 using ProductManagement.Services;
 using ProductManagement.Services.Interface;
 
@@ -8,18 +11,44 @@ namespace ProductManagement.Controllers
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService, ICategoryRepository categoryRepository)
         {
             _categoryService = categoryService;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet("api/categories")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int skip, int limit, string? name = "")
         {
             try
             {
-                var categories = await _categoryService.GetAllCategoryAsync();
+                if (skip < 0)
+                {
+                    return BadRequest(new { Error = "Skip must be non-negative" });
+                }
+
+                if (limit <= 0 || limit > 1000)
+                {
+                    return BadRequest(new { Error = "Limit must be between 1 and 1000" });
+                }
+
+                var query = _categoryRepository.GetQueryable();
+
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    query = query.Where(x => x.Name.Contains(name.Trim()));
+                }
+
+                var categories = await query
+                    .Skip(skip)
+                    .Take(limit)
+                    .Select(x => new
+                    {
+                        Name = x.Name
+                    }).ToListAsync();
+
                 return Ok(new
                 {
                     Message = "List of Categories",
@@ -37,7 +66,15 @@ namespace ProductManagement.Controllers
         {
             try
             {
-                var category = await _categoryService.FindByIdAsync(id);
+                var category = await _categoryRepository.GetQueryable()
+                    .Where(x =>x.Id == id)
+                    .FirstOrDefaultAsync();
+
+                if (category is null)
+                {
+                    throw new Exception($"Could not found category with Id {id}");
+                }
+
                 return Ok(new
                 {
                     Message = "Category Details",
@@ -51,21 +88,20 @@ namespace ProductManagement.Controllers
         }
 
         [HttpPost("api/categories")]
-        public async Task<IActionResult> Create([FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> Create([FromBody] CategoryDto input)
         {
             try
             {
-                if (categoryDto == null)
+                if (string.IsNullOrEmpty(input.Name))
                 {
-                    return BadRequest(new { Message = "Invalid category data." });
+                    throw new Exception("Category name is required!");
                 }
-
-                await _categoryService.CreateCategoryAsync(categoryDto);
+                await _categoryService.CreateCategoryAsync(input);
 
                 return Ok(new
                 {
                     Message = "Product created successfully!",
-                    Data = categoryDto
+                    Data = input
                 });
             }
             catch (Exception ex)
@@ -83,6 +119,14 @@ namespace ProductManagement.Controllers
         {
             try
             {
+                var category = await _categoryRepository.GetQueryable()
+                    .Where (x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+                if (category is null)
+                {
+                    throw new Exception("Could not found category...");
+                }
                 await _categoryService.DeleteCategoryAsync(id);
                 return Ok(new
                 {
@@ -97,16 +141,24 @@ namespace ProductManagement.Controllers
         }
 
         [HttpPut("api/categories/{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> Edit(int id, [FromBody] CategoryDto input)
         {
             try
             {
-                categoryDto.Id = id;
-                await _categoryService.UpdateCategoryAsync(categoryDto);
+                var category = await _categoryRepository.GetQueryable()
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+                if (category is null)
+                {
+                    throw new Exception("Could not found category...");
+                }
+
+                await _categoryService.UpdateCategoryAsync(id, input);
                 return Ok(new
                 {
                     Message = "Category updated successfully!",
-                    Data = categoryDto
+                    Data = input
                 });
             }
             catch (Exception ex)

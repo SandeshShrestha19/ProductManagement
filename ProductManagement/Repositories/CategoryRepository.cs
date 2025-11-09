@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ProductManagement.Data;
 using ProductManagement.Dtos;
 using ProductManagement.Models;
@@ -13,48 +14,29 @@ namespace ProductManagement.Repositories
         {
             _context = context;
         }
-        public async Task<List<Category>> GetAllCategoryAsync()
+        
+        public async Task<Category> AddAsync(Category category)
         {
-            return await _context.Categories.ToListAsync();
-        }
-        public async Task<Category> FindByIdAsync(int id)
-        {
-            return await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-        }
-        public async Task CreateCategoryAsync(CategoryDto categoryDto)
-        {
-            var category = new Category
-            {
-                Id = categoryDto.Id,
-                Name = categoryDto.Name,
-                Description = categoryDto.Description
-            };
-            _context.Categories.Add(category);
+            await _context.AddAsync(category);
             await _context.SaveChangesAsync();
+            return category;
         }
-        public async Task DeleteCategoryAsync(int id)
+
+        public async Task DeleteAsync(Category category)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                throw new Exception("Category not found!");
-            }
-            _context.Categories.Remove(category);
+            _context.Remove(category);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateCategoryAsync(CategoryDto categoryDto)
+        public IQueryable<Category> GetQueryable()
         {
-            var category = await _context.Products.FindAsync(categoryDto.Id);
-            if (category == null)
-            {
-                throw new Exception("Category not found!");
-            }
-
-            category.Name = categoryDto.Name;
-            category.Description = categoryDto.Description;
-
+            return _context.Set<Category>().AsQueryable();
+        }
+        public async Task<Category> UpdateAsync(Category category)
+        {
+            _context.Update(category);
             await _context.SaveChangesAsync();
+            return category;
         }
     
     }

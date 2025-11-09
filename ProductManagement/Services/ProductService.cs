@@ -1,5 +1,7 @@
-﻿using ProductManagement.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManagement.Dtos;
 using ProductManagement.Models;
+using ProductManagement.Repositories;
 using ProductManagement.Repositories.Interface;
 using ProductManagement.Services.Interface;
 
@@ -13,25 +15,59 @@ namespace ProductManagement.Services
         {
             _productRepository = productRepository;
         }
-        public async Task<List<Product>> GetAllProductsAsync()
+        
+        public async Task CreateProductAsync(ProductDto productCreateDto)
         {
-            return await _productRepository.GetAllProductsAsync();
+            try
+            {
+                var product = new Product
+                {
+                    Name = productCreateDto.Name,
+                    Price = productCreateDto.Price,
+                    Description = productCreateDto.Description ?? string.Empty,
+                    CategoryId = productCreateDto.CategoryId
+                };
+                await _productRepository.CreateAsync(product);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
-        public async Task<Product> FindByIdAsync(int id)
+
+        public async Task DeleteProductAsync(int id)
         {
-            return await _productRepository.FindByIdAsync(id);
+            try
+            {
+                var product = await _productRepository.GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+                if (product is null)
+                {
+                    throw new Exception("Product not found!");
+                }
+                await _productRepository.DeleteAsync(product);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
-        public async Task CreateAsync(ProductDto productDto)
+        public async Task UpdateProductAsync(int id, ProductDto productCreateDto)
         {
-            await _productRepository.CreateAsync(productDto);
+            try
+            {
+                var product = await _productRepository.GetQueryable().FirstOrDefaultAsync(x => x.Id == id);
+                if (product is null)
+                {
+                    throw new Exception("Product not found!");
+                }
+                await _productRepository.UpdateAsync(product);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
-        public async Task UpdateAsync(ProductDto productDto)
-        {
-            await _productRepository.UpdateAsync(productDto);
-        }
-        public async Task DeleteAsync(int id)
-        {
-            await _productRepository.DeleteAsync(id);
-        }
+
     }
 }
